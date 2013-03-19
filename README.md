@@ -18,8 +18,8 @@ List all:
 23 Rofl
 6 dev01.int.example.com
 ```
-```
 Show specific password:
+```
 ./rattic.py show 4
 Title: admin01.example.com
 Username: root
