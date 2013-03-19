@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+from sys import argv 
 import requests
 
 class RatticAPI(object):
@@ -30,7 +30,7 @@ class RatticAPI(object):
     def _makerequest(self, path):
         reply = requests.get(self.server + 'api/' + self.VERSION + '/' + path, headers=self._getheaders())
         reply.raise_for_status()
-        return reply.json
+        return reply.json()
 
     def list(self, endpoint):
         return self._makerequest(endpoint + '/')
@@ -41,19 +41,14 @@ class RatticAPI(object):
     def get(self, endpoint, id):
         return self._makerequest(endpoint + '/' + str(id) + '/')
 
+script, command, argument = argv 
 
-api = RatticAPI(server='http://admin01:8000/', creds=('daniel', '745d623a557f81751d9153d8a654ce87d1e13f77'))
-d = api.list_cred()
-e = api.list_tag()
+api = RatticAPI(server='http://localhost:8000/', creds=('api', 'e391cdb7da5ff1ab1dfb977585277cb97474b70a'))
+if command == 'list':
+    l = api.list_cred()
+    for c in l['objects']:
+        print c['id'], c['title']
 
-for c in api.list_cred()['objects']:
-    print c['id'], c['title']
-
-for t in api.list_tag()['objects']:
-    print t['name']
-
-for s in api.set_cred(listids=map(str, [4,2,7,1]))['objects']:
-    print s['id'], s['title']
-
-print api.get_cred(id=5)
-
+elif command == 'show':
+    c = api.get_cred(id=int(argument))
+    print c
