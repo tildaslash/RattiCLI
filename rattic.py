@@ -41,7 +41,8 @@ class RatticAPI(object):
     def get(self, endpoint, id):
         return self._makerequest(endpoint + '/' + str(id) + '/')
 
-script, command, argument = argv 
+command = argv[1]
+
 
 api = RatticAPI(server='http://localhost:8000/', creds=('api', 'e391cdb7da5ff1ab1dfb977585277cb97474b70a'))
 if command == 'list':
@@ -50,5 +51,5 @@ if command == 'list':
         print c['id'], c['title']
 
 elif command == 'show':
-    c = api.get_cred(id=int(argument))
+    c = api.get_cred(id=int(argv[2]))
     print c
