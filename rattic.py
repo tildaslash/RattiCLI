@@ -41,10 +41,17 @@ class RatticAPI(object):
     def get(self, endpoint, id):
         return self._makerequest(endpoint + '/' + str(id) + '/')
 
+def cred_print(cred):
+    print "Title: %s" % (cred['title'])
+    print "Username: %s" % (cred['username'])
+    print "Password: %s" % (cred['password'])
+    print "Description:\n%s" % (cred['description'])
+    
+
 command = argv[1]
 
 
-api = RatticAPI(server='http://localhost:8000/', creds=('api', 'e391cdb7da5ff1ab1dfb977585277cb97474b70a'))
+api = RatticAPI(server='url', creds=('username', 'apikey'))
 if command == 'list':
     l = api.list_cred()
     for c in l['objects']:
@@ -52,4 +59,4 @@ if command == 'list':
 
 elif command == 'show':
     c = api.get_cred(id=int(argv[2]))
-    print c
+    cred_print(c)
