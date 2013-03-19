@@ -50,8 +50,7 @@ def cred_print(cred):
 
 command = argv[1]
 
-
-api = RatticAPI(server='url', creds=('username', 'apikey'))
+api = RatticAPI(server='https://demo.rattic.org/', creds=('admin', 'b6797a0307b2d6defe5abe23a4f28e932cc687d6'))
 if command == 'list':
     l = api.list_cred()
     for c in l['objects']:
