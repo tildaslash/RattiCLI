@@ -1,6 +1,7 @@
 #!/usr/bin/python
-from sys import argv 
+from sys import argv
 import requests
+import json
 
 class RatticAPI(object):
     VERSION = 'v1'
@@ -30,7 +31,7 @@ class RatticAPI(object):
     def _makerequest(self, path):
         reply = requests.get(self.server + 'api/' + self.VERSION + '/' + path, headers=self._getheaders())
         reply.raise_for_status()
-        return reply.json()
+        return json.loads(reply.content)
 
     def list(self, endpoint):
         return self._makerequest(endpoint + '/')
