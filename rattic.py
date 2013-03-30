@@ -49,14 +49,39 @@ def cred_print(cred):
     print "Description:\n%s" % (cred['description'])
     
 
-command = argv[1]
+if __name__ == "__main__":
 
-api = RatticAPI(server='https://demo.rattic.org/', creds=('admin', 'b6797a0307b2d6defe5abe23a4f28e932cc687d6'))
-if command == 'list':
-    l = api.list_cred()
-    for c in l['objects']:
-        print c['id'], c['title']
+    yellow = '\033[1;33m{0}\033[1;m'
+    green = "\033[1;36m{0}\033[00m"    
+    red = "\033[01;31m{0}\033[00m"
 
-elif command == 'show':
-    c = api.get_cred(id=int(argv[2]))
-    cred_print(c)
+    def usage():
+        print "Usage:"
+        print "./rattic.py", yellow.format("<command> <args>")
+        print "available commands:"
+        print green.format("    list"), "   Lists all objects"
+        print green.format("    show <object id>"), "   shows an object's details"    
+
+    if len(argv) < 2:
+        usage()
+
+    else:
+        api = RatticAPI(server='https://demo.rattic.org/', creds=('admin', 'b6797a0307b2d6defe5abe23a4f28e932cc687d6'))
+
+        commands = {'list': 'list',
+                    'show': 'show'}
+
+        try:
+            funct = commands[argv[1]]
+
+            if funct == 'list':
+                l = api.list_cred()
+                for c in l['objects']:
+                    print c['id'], c['title']
+
+            elif funct  == 'show':
+                c = api.get_cred(id=int(argv[2]))
+                cred_print(c)
+        except KeyError:
+            print red.format("error: Rattic command not found.")
+            usage()
