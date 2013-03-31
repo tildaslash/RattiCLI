@@ -12,7 +12,7 @@ class RatticAPI(object):
             self.creds = creds
 
     def __getattr__(self, name):
-        (name, point) = name.split('_', 1)
+        name, point = name.split('_')
         method = object.__getattribute__(self, name)
 	def wrapped(*args, **kwargs):
             return method(endpoint=point, *args, **kwargs)
@@ -34,19 +34,19 @@ class RatticAPI(object):
         return json.loads(reply.content)
 
     def list(self, endpoint):
-        return self._makerequest(endpoint + '/')
+        l = self._makerequest(endpoint + '/')
+        for c in l['objects']:
+            print c['id'], c['title']
 
     def set(self, endpoint, listids):
         return self._makerequest(endpoint + '/set/' + ';'.join(listids) + '/')
 
-    def get(self, endpoint, id):
-        return self._makerequest(endpoint + '/' + str(id) + '/')
-
-def cred_print(cred):
-    print "Title: %s" % (cred['title'])
-    print "Username: %s" % (cred['username'])
-    print "Password: %s" % (cred['password'])
-    print "Description:\n%s" % (cred['description'])
+    def get(self, endpoint, args):
+        cred = self._makerequest(endpoint + '/' + str(args['-i']) + '/')
+        print "Title: %s" % (cred['title'])
+        print "Username: %s" % (cred['username'])
+        print "Password: %s" % (cred['password'])
+        print "Description:\n  %s" % (cred['description'])
     
 
 if __name__ == "__main__":
@@ -59,8 +59,8 @@ if __name__ == "__main__":
         print "Usage:"
         print "./rattic.py", yellow.format("<command> <args>")
         print "available commands:"
-        print green.format("    list"), "   Lists all objects"
-        print green.format("    show <object id>"), "   shows an object's details"    
+        print "    list       Lists all objects"
+        print "    show", green.format("-i"), yellow.format("ID"), "Shows an object's details"    
 
     if len(argv) < 2:
         usage()
@@ -69,19 +69,19 @@ if __name__ == "__main__":
         api = RatticAPI(server='https://demo.rattic.org/', creds=('admin', 'b6797a0307b2d6defe5abe23a4f28e932cc687d6'))
 
         commands = {'list': 'list',
-                    'show': 'show'}
+                    'show': 'get'}
 
         try:
-            funct = commands[argv[1]]
+            funct = commands[argv[1]]+'_cred'
 
-            if funct == 'list':
-                l = api.list_cred()
-                for c in l['objects']:
-                    print c['id'], c['title']
+            
+            if len(argv) == 2:
+                getattr(api, funct)()
 
-            elif funct  == 'show':
-                c = api.get_cred(id=int(argv[2]))
-                cred_print(c)
+            else:
+                args = dict(zip(*[iter(argv[2:])] * 2))
+                getattr(api, funct)(args=args)
+        
         except KeyError:
             print red.format("error: Rattic command not found.")
             usage()
